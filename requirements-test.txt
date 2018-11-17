@@ -1,8 +1,0 @@
-py-moneyed
-mock
-pytest-mock
-pytest
-pytest-django
-
-
-# Additional test requirements go here
