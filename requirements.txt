@@ -1,2 +1,2 @@
-py-moneyed
+py-moneyed>=0.7
 # Additional requirements go here
