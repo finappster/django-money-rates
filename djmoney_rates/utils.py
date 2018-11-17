@@ -7,19 +7,19 @@ from .models import Rate, RateSource
 from .settings import money_rates_settings
 
 import moneyed
+import datetime
 
 
-def get_rate(currency):
+def get_rate(currency, date):
     """Returns the rate from the default currency to `currency`."""
     source = get_rate_source()
     try:
-        return Rate.objects.get(source=source, currency=currency).value
+        return Rate.objects.get(source=source, currency=currency, date=date).value
     except Rate.DoesNotExist:
         raise CurrencyConversionException(
-            "Rate for %s in %s do not exists. "
+            "Rate for %s in %s, date %s do not exists. "
             "Please run python manage.py update_rates" % (
-                currency, source.name))
-
+                currency, source.name, str(date)))
 
 def get_rate_source():
     """Get the default Rate Source and return it."""
@@ -32,7 +32,7 @@ def get_rate_source():
             "Please run python manage.py update_rates" % backend.get_source_name())
 
 
-def base_convert_money(amount, currency_from, currency_to):
+def base_convert_money(amount, currency_from, currency_to, date):
     """
     Convert 'amount' from 'currency_from' to 'currency_to'
     """
@@ -40,13 +40,13 @@ def base_convert_money(amount, currency_from, currency_to):
 
     # Get rate for currency_from.
     if source.base_currency != currency_from:
-        rate_from = get_rate(currency_from)
+        rate_from = get_rate(currency_from, date)
     else:
         # If currency from is the same as base currency its rate is 1.
         rate_from = Decimal(1)
 
     # Get rate for currency_to.
-    rate_to = get_rate(currency_to)
+    rate_to = get_rate(currency_to, date)
 
     if isinstance(amount, float):
         amount = Decimal(amount).quantize(Decimal('.000001'))
@@ -55,10 +55,12 @@ def base_convert_money(amount, currency_from, currency_to):
     return ((amount / rate_from) * rate_to).quantize(Decimal("1.00"))
 
 
-def convert_money(amount, currency_from, currency_to):
+def convert_money(amount, currency_from, currency_to, date=None):
     """
     Convert 'amount' from 'currency_from' to 'currency_to' and return a Money
     instance of the converted amount.
     """
-    new_amount = base_convert_money(amount, currency_from, currency_to)
+    if not date:
+        date = datetime.date.today()
+    new_amount = base_convert_money(amount, currency_from, currency_to, date)
     return moneyed.Money(new_amount, currency_to)

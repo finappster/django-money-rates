@@ -29,7 +29,9 @@ USER_SETTINGS = getattr(settings, 'DJANGO_MONEY_RATES', None)
 DEFAULTS = {
     'DEFAULT_BACKEND': 'djmoney_rates.backends.OpenExchangeBackend',
 
-    'OPENEXCHANGE_URL': 'http://openexchangerates.org/api/latest.json',
+    # 'OPENEXCHANGE_URL': 'http://openexchangerates.org/api/latest.json',
+    'OPENEXCHANGE_URL_LATEST': 'http://openexchangerates.org/api/latest.json',
+    'OPENEXCHANGE_URL_HISTORICAL': 'http://openexchangerates.org/api/historical/%s.json',
     'OPENEXCHANGE_APP_ID': '',
     'OPENEXCHANGE_BASE_CURRENCY': 'USD',
 }
