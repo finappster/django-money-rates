@@ -56,7 +56,7 @@ setup(
     include_package_data=True,
     test_suite='runtests',
     install_requires=[
-        'py-moneyed'
+        'py-moneyed>=0.7'
     ],
     zip_safe=False,
 )
